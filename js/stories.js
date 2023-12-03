@@ -152,27 +152,23 @@ $("#story-form").on("submit", submitNewStory);
 async function updateStory(e) {
   console.debug("updateStory");
   e.preventDefault();
+  const Id = JSON.parse(localStorage.getItem('IDofEditStory'))
+  const storyId = Id.StoryID;
 
-  const newTitle = $(".title-input").val();
-  const newAuthor = $(".author-input").val();
-  const newUrl = $(".url-input").val();
+  const title = $(".title-input").val();
+  const author = $(".author-input").val();
+  const url = $(".url-input").val();
   const username = currentUser.username;
 
-  const story = await storyList.updateStory(currentUser, {
-    newTitle,
-    newAuthor,
-    newUrl,
-    username,
-  });
+  await currentUser.updateStory(storyId, { title, author, url });
 
-  const $story = generateStoryMarkup(story);
-  $allStoriesList.prepend($story);
-  $("#update-story-form").trigger("reset");
-  $("#update-story-form").hide();
+  location.reload();
+  $("#story-form").trigger("reset");
+  $("#story-form").hide();
   putStoriesOnPage();
 }
 
-$("#update-story-form").on("submit", updateStory);
+$("#story-form").on("click","#update-story-form", updateStory);
 
 async function deleteAStory(e) {
   console.debug("deleteAStory");

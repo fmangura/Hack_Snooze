@@ -6,6 +6,9 @@
 function navSubmit(evt) {
   console.debug("navSubmit", evt);
   $('#story-form').show();
+  $('#story-form-button').show();
+  $('#update-story-form').hide();
+
 }
 
 $('#submit-link').on('click', navSubmit);
@@ -13,21 +16,43 @@ $('#submit-link').on('click', navSubmit);
 function updateSubmit(evt) {
   console.debug("updateSubmit", evt);
   console.log('clicked pencil')
-  $('#story-form').attr("id", "update-story-form");
+  const target = $(evt.target);
+  console.log(target)
+  const storySel = target.closest("li");
+  const storyId = storySel.attr("id");
+  const storyObj = { StoryID: `${storyId}` }
+
+  const story = storyList.stories.find((s) => s.storyId === storyId)
+  console.log(story);
+
+  $(".title-input").attr('placeholder', `${story.title}`);
+  $(".author-input").attr('placeholder', `${story.author}`);
+  $(".url-input").attr('placeholder', `${story.url}`);
+
+  localStorage.setItem('IDofEditStory', JSON.stringify(storyObj))
+  $('#story-form-button').hide();
   $('#update-story-form').show();
+  $('#story-form').show();
 }
 
 $('.stories-list').on("click", ".edit", updateSubmit);
 
 /** Show main list of all stories when click site name */
-
+// Shows login form when clicked but not logged in
 function navAllStories(evt) {
   console.debug("navAllStories", evt);
+  console.log(localStorage.getItem('token'));
+  if (localStorage.getItem('token')){
   hidePageComponents();
   putStoriesOnPage();
   $('#story-form').hide();
   $('#own-stories-list').hide();
   $('#fave-form').hide();
+  } else {
+    $loginForm.show();
+    $signupForm.show();
+  }
+
 }
 
 $body.on("click", "#nav-all", navAllStories);

@@ -84,23 +84,9 @@ class StoryList {
     const story = new Story(response.data.story);
     this.stories.unshift(story);
     currentUser.ownStories.unshift(story);
-
+    console.log("Made New")
     return story;
 
-  }
-
-  async updateStory(currentUser, {title, author, url}) {
-    const token = currentUser.loginToken;
-    const response = await axios ({
-      url: `${BASE_URL}/stories/${story.storyId}`,
-      method: `PATCH`,
-      params: { token, story: {title, author, url} },
-    });
-    const story = new Story(response.data.story);
-    this.stories.unshift(story);
-    currentUser.ownStories.unshift(story);
-
-    return story;
   }
 }
 
@@ -198,8 +184,9 @@ class User {
   /** When we already have credentials (token & username) for a user,
    *   we can log them in automatically. This function does that.
    */
-
+ 
   static async loginViaStoredCredentials(token, username) {
+    // Included a try and catch for error messages during signup
     try {
       const response = await axios({
         url: `${BASE_URL}/users/${username}`,
@@ -270,4 +257,22 @@ class User {
     console.log(`${story.storyId} was deleted from API`)
   }
 
+  // updates an owned story
+  async updateStory(storyID, { title, author, url, }) {
+    const token = this.loginToken;
+    const response = await axios({
+      method: 'PATCH',
+      url: `${BASE_URL}/stories/${storyID}`,
+      data: {token, story: {title, author, url} },
+    });
+
+    console.log(response.data);
+
+    const storyUpdate = currentUser.ownStories.find((s) => s.storyId === storyID);
+    console.log(storyUpdate)
+    storyList.stories.unshift(storyUpdate);
+    this.ownStories.unshift(storyUpdate);
+    console.log("updated")
+    return storyUpdate;
+  }
 }
